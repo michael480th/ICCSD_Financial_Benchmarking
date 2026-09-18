@@ -11,6 +11,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _nav import nav
 
 # (href, title, blurb)
+SPENDING = [
+    ("iccsd-labor-waterfall.html", "Where did the money go? — 20 years of payroll",
+     "Labor is roughly nine of every ten dollars a district spends, so this is very nearly the whole "
+     "spending story. FY2005–FY2025 payroll — salaries and benefits — split into teachers, "
+     "paraeducators, school support, school administration and central administration, and set against "
+     "enrollment. Labor rose 163% while enrollment rose 41%; central administration grew nearly five-fold, "
+     "more than twice as fast as the district. After inflation, spending per student is up 13%."),
+]
 BENCH = [
     ("kpi-three-methodologies.html", "KPIs three ways — internal, Moody's & S&P",
      "The full picture: ICCSD's financial KPIs calculated under its own internal Ten-Point test, "
@@ -98,6 +106,12 @@ h2{{font-size:18px;margin:26px 0 4px}} .gnote{{color:var(--mut);font-size:14px;m
 <p class="sub">The narrower and older pieces, kept here so the four main pages stay focused. The
 detailed versions behind those main pages live here too · {date}</p>
 
+<h2>Where the money goes</h2>
+<p class="gnote">Two decades of spending growth, broken down by who it pays.</p>
+<div class="grid">
+{cards(SPENDING)}
+</div>
+
 <h2>Comprehensive benchmark</h2>
 <p class="gnote">Every KPI, three methodologies, all 15 districts, FY2015–2025 — in one place.</p>
 <div class="grid">
@@ -120,4 +134,5 @@ detailed versions behind those main pages live here too · {date}</p>
 </div></body></html>"""
 
 open("other-analyses.html", "w").write(DOC)
-print(f"Wrote other-analyses.html ({len(DOC)//1024} KB), {len(BENCH)+len(DEEP)+len(NARROW)} links")
+print(f"Wrote other-analyses.html ({len(DOC)//1024} KB), "
+      f"{len(SPENDING)+len(BENCH)+len(DEEP)+len(NARROW)} links")

@@ -1,0 +1,9 @@
+fiscal_year,field,detail
+2011,instructional_aides_fte,324 -> 221 (-32%) -- likely a coding change
+2011,school_administrators_fte,35 -> 57 (+63%) -- likely a coding change
+2015,school_administrators_fte,63 -> 35 (-44%) -- likely a coding change
+2022,school_administrators_fte,48 -> 97 (+102%) -- likely a coding change
+2009,lea_administrators_fte,9 -> 13 (+44%) -- likely a coding change
+2010,lea_administrators_fte,13 -> 5 (-62%) -- likely a coding change
+2011,lea_administrators_fte,5 -> 19 (+280%) -- likely a coding change
+2014,lea_administrators_fte,19 -> 28 (+47%) -- likely a coding change

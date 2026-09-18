@@ -30,6 +30,10 @@ in plain language, with a short explanation of why it matters.
 | **2. [Does it have a cushion?](https://michael480th.github.io/ICCSD_Financial_Benchmarking/iccsd-cushion.html)** | Does the district keep a financial safety margin — and is it shrinking? Three ways to measure it (spending room, reserves, and days of cash), all in one place. |
 | **3. [Dig into the data](https://michael480th.github.io/ICCSD_Financial_Benchmarking/iowa-district-financial-benchmark.html)** | The complete picture: all 15 of Iowa's largest districts, scored side by side, with a deep-dive tool for any one district. |
 
+One more, worth its own line:
+
+- **[Where did the money go?](https://michael480th.github.io/ICCSD_Financial_Benchmarking/iccsd-labor-waterfall.html)** — labor is roughly nine of every ten dollars a district spends, so this is very nearly the whole spending story. FY2005–FY2025 payroll split into teachers, paraeducators, school support, school administration and central administration, set against enrollment growth.
+
 Two more, kept off to the side:
 
 - **[Other analyses](https://michael480th.github.io/ICCSD_Financial_Benchmarking/other-analyses.html)** — the narrower and older pieces, including **"Can we trust the numbers?"** (the reporting-integrity / CAR-vs-audited screen), the student-activities fund, point-in-time FY24 snapshots, filing-timeliness, and a neighboring district, plus the detailed single-topic versions behind the main pages.
@@ -64,8 +68,10 @@ A couple of things worth knowing when you read the charts:
 
 - A negative "unrestricted net position" looks alarming but is **normal** for Iowa schools — it reflects
   long-term pension obligations, not a district about to run out of money.
-- One figure people often ask about — staff salaries and benefits as a share of the budget — isn't broken
-  out the same way in these audited reports, so it's noted rather than scored.
+- One figure people often ask about — staff salaries and benefits — isn't broken out in the audited
+  reports, so the benchmark pages note it rather than score it. It *can* be recovered from two other
+  official records, and ["Where did the money go?"](https://michael480th.github.io/ICCSD_Financial_Benchmarking/iccsd-labor-waterfall.html)
+  does exactly that: twenty years of payroll, split by the jobs it pays for.
 
 ---
 
@@ -90,6 +96,13 @@ python3 scripts/build_cushion.py         # "Does it have a cushion?" (reserves +
 python3 scripts/build_integrity_report.py # "Can we trust the numbers?" reporting screen
 python3 scripts/build_other_analyses.py  # the "Other analyses" index
 python3 scripts/build_workbook.py        # build the Excel spreadsheet
+
+# "Where did the money go?" — the 20-year labor decomposition (fetch, then build)
+python3 scripts/fetch_f33_labor.py       # Census F-33 salaries/benefits by function, FY2005-FY2023
+python3 scripts/fetch_car_labor.py       # Iowa DE CAR workbooks, FY2019-FY2025
+python3 scripts/fetch_staff_fte.py       # NCES staff counts by role, FY2005-FY2025
+python3 scripts/fetch_cpi.py             # BLS CPI-U, for the constant-dollar view
+python3 scripts/build_labor_waterfall.py # -> iccsd-labor-waterfall.html
 ```
 
 The site is published with **GitHub Pages** straight from this repository — the landing page is

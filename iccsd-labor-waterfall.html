@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Where did the money go? &mdash; ICCSD labor costs, FY2005&ndash;FY2025</title>
+<meta name="description" content="Iowa City Community School District payroll costs
+ broken into teachers, paraeducators, school support, school administration and central
+ administration, FY2005-FY2025, compared against enrollment growth.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:8px 20px 60px}
+a{color:#1d4ed8}
+h1{font-size:26px;margin:18px 0 6px;color:#1e3a5f;line-height:1.25}
+.lede{font-size:16px;color:#334155;margin:0 0 18px;max-width:760px}
+h2{font-size:18px;margin:38px 0 6px;color:#1e3a5f;border-bottom:2px solid var(--line);
+ padding-bottom:5px}
+h3{font-size:15px;margin:22px 0 5px;color:#1e40af}
+p{max-width:760px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0 6px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.kpi .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);
+ font-weight:700}
+.kpi .val{font-size:19px;font-weight:800;margin:5px 0 2px;color:#1e3a5f}
+.kpi .sub{font-size:12.5px;color:var(--mut)}
+.kpi.green .val{color:#15803d} .kpi.amber .val{color:#b45309}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;
+ padding:16px 18px;margin:14px 0}
+.chart{position:relative;height:420px}
+.chart.short{height:330px}
+.factors{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:14px 0}
+.factor{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 15px}
+.factor .f-num{font-size:25px;font-weight:800;line-height:1.1}
+.factor .f-lbl{font-weight:700;font-size:14px;margin:3px 0 6px}
+.factor .f-body{font-size:13px;color:#374151;margin:0}
+.factor.red{border-top:3px solid #dc2626} .factor.red .f-num{color:#b91c1c}
+.factor.amber{border-top:3px solid #d97706} .factor.amber .f-num{color:#b45309}
+.factor.blue{border-top:3px solid #2563eb} .factor.blue .f-num{color:#1e40af}
+.callout{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:14px 16px;
+ font-size:13.5px;color:#0c4a6e;margin:16px 0;max-width:820px}
+.callout strong{color:#075985}
+.warn{background:#fff7ed;border-color:#fed7aa;color:#7c2d12} .warn strong{color:#9a3412}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin:10px 0}
+th{background:#1e3a5f;color:#fff;padding:6px 8px;text-align:right;font-weight:600;
+ position:sticky;top:0}
+th.lft,td.lft{text-align:left}
+td{padding:5px 8px;border-bottom:1px solid #f1f5f9;text-align:right;
+ font-variant-numeric:tabular-nums}
+tr:nth-child(even) td{background:#f8fafc}
+td.gap-pos{color:#15803d;font-weight:700} td.gap-neg{color:#b91c1c;font-weight:700}
+td.tot{font-weight:700;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+td.src{color:var(--mut);font-size:11.5px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;
+ vertical-align:baseline}
+.tag{font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:#eef2ff;
+ color:#4338ca;border:1px solid #c7d2fe;border-radius:4px;padding:1px 5px;margin-left:5px;
+ font-weight:700}
+.scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
+table.wide{font-size:11.5px} table.wide td,table.wide th{padding:4px 6px}
+.foot{color:var(--mut);font-size:12.5px;margin-top:34px;border-top:1px solid var(--line);
+ padding-top:14px}
+details{margin:10px 0} summary{cursor:pointer;font-weight:600;color:#1e40af}
+@media(max-width:640px){.chart{height:360px} h1{font-size:22px}}
+</style></head><body>
+<style>.sitenav{max-width:960px;margin:0 auto;padding:14px 20px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font:600 13.5px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}.sitenav .brand{color:#0f172a;margin-right:4px;font-weight:800}.sitenav a,.sitenav .cur{display:inline-block;padding:6px 13px;border-radius:999px;text-decoration:none;border:1px solid #e2e8f0}.sitenav a{color:#2563eb;background:#fff}.sitenav a:hover{background:#eff6ff;border-color:#bfdbfe}.sitenav .cur{color:#0f172a;background:#f1f5f9;border-color:#cbd5e1}.sitenav .sep{flex-basis:100%;height:0;margin:0}.sitenav .more{color:#64748b;border-color:#eef2f7;background:#fff;font-weight:600}.sitenav .more:hover{background:#f8fafc;border-color:#e2e8f0}.sitenav .more.cur{color:#0f172a;background:#f1f5f9;border-color:#cbd5e1}</style><nav class="sitenav"><span class="brand">Iowa City CSD finances</span><a href="index.html">How ICCSD compares</a><a href="iccsd-cushion.html">Does it have a cushion?</a><a href="iowa-district-financial-benchmark.html">Dig into the data</a><span class="sep"></span><a class="more cur" href="other-analyses.html">Other analyses</a><a class="more" href="making-the-foc-work.html">Oversight committee</a></nav>
+<div class="wrap">
+
+<h1>Where did the money go?</h1>
+<p class="lede">Roughly nine of every ten dollars a school district spends is somebody's
+pay. So &ldquo;where did spending grow?&rdquo; is very nearly &ldquo;whose payroll
+grew?&rdquo; This page splits two decades of Iowa City CSD payroll &mdash; salaries
+<em>and</em> benefits &mdash; into the jobs that make it up, and asks how much of the
+growth is simply explained by teaching more children.</p>
+
+<div class="kpis"><div class="kpi blue"><div class="lbl">Total labor cost</div><div class="val">$71M &rarr; $186M</div><div class="sub">+163% over 20 years</div></div><div class="kpi blue"><div class="lbl">Students</div><div class="val">10,637 &rarr; 15,013</div><div class="sub">+41% over the same period</div></div><div class="kpi amber"><div class="lbl">Labor per student</div><div class="val">$6,655 &rarr; $12,391</div><div class="sub">+86% before inflation</div></div><div class="kpi green"><div class="lbl">Per student, inflation-adjusted</div><div class="val">$10,970 &rarr; $12,391</div><div class="sub">+13% in constant 2025 dollars</div></div></div>
+
+<div class="callout"><strong>The one-line answer.</strong>
+Labor cost rose 163% while enrollment rose 41%.
+Teachers added the most money ($70M, or
+61% of all growth), because it is by far the biggest
+payroll. But the <em>fastest-growing</em> line was Central administration, which
+multiplied 4.8&times; &mdash; well over double the
+2.6&times; of the district as a whole.
+Set against 65% inflation, spending per student rose
++13% in real terms.</div>
+
+<h2>1. The waterfall: $71M to $186M</h2>
+<p>Each bar is one category's contribution to the $115M increase. The
+navy bars are the FY2005 and FY2025 totals; everything between them adds up to
+the difference.</p>
+<div class="card"><div class="chart"><canvas id="wf"></canvas></div></div>
+
+<div class="scroll"><table>
+<thead><tr><th class="lft">Category</th><th>FY2005</th><th>FY2025</th>
+<th>Change</th><th>Growth</th><th>Share of growth</th></tr></thead>
+<tbody><tr><td class="lft"><span class="sw" style="background:#2a78d6"></span>Teachers <span class="tag">modeled</span></td><td>$45.1M</td><td>$115.1M</td><td class="gap-pos">$70.0M</td><td>+155%</td><td>60.7%</td></tr><tr><td class="lft"><span class="sw" style="background:#eb6834"></span>Paraeducators <span class="tag">modeled</span></td><td>$7.0M</td><td>$17.5M</td><td class="gap-pos">$10.6M</td><td>+152%</td><td>9.2%</td></tr><tr><td class="lft"><span class="sw" style="background:#1baf7a"></span>Student & staff support</td><td>$6.9M</td><td>$16.8M</td><td class="gap-pos">$9.9M</td><td>+143%</td><td>8.6%</td></tr><tr><td class="lft"><span class="sw" style="background:#eda100"></span>School administration</td><td>$4.2M</td><td>$11.4M</td><td class="gap-pos">$7.2M</td><td>+172%</td><td>6.3%</td></tr><tr><td class="lft"><span class="sw" style="background:#e87ba4"></span>Central administration</td><td>$1.8M</td><td>$8.5M</td><td class="gap-pos">$6.7M</td><td>+380%</td><td>5.8%</td></tr><tr><td class="lft"><span class="sw" style="background:#008300"></span>Operations & maintenance</td><td>$4.5M</td><td>$12.4M</td><td class="gap-pos">$7.9M</td><td>+176%</td><td>6.9%</td></tr><tr><td class="lft"><span class="sw" style="background:#4a3aa7"></span>Food service</td><td>$1.4M</td><td>$4.2M</td><td class="gap-pos">$2.8M</td><td>+203%</td><td>2.4%</td></tr><tr><td class="lft"><span class="sw" style="background:#e34948"></span>Transportation</td><td>$0.0M</td><td>$0.1M</td><td class="gap-pos">$0.1M</td><td>n/a</td><td>0.1%</td></tr>
+<tr><td class="lft"><strong>Total</strong></td><td><strong>$70.8M</strong></td>
+<td><strong>$186.0M</strong></td>
+<td class="gap-pos"><strong>$115.2M</strong></td>
+<td><strong>+163%</strong></td><td><strong>100.0%</strong></td></tr>
+</tbody></table></div>
+
+<h2>2. Every category outran enrollment</h2>
+<p>Indexed so FY2005&nbsp;=&nbsp;100. The dashed black line is the number of
+students. Any line above it is a payroll that grew faster than the district it
+serves.</p>
+<div class="card"><div class="chart"><canvas id="idx"></canvas></div></div>
+
+<h2>3. So what actually drove it?</h2>
+<p>Payroll is the product of three things: how many students there are, how many
+staff the district employs per student, and what each staff member costs. Splitting
+the $115M increase across the three:</p>
+<div class="factors"><div class="factor red"><div class="f-num">+68%</div><div class="f-lbl">Cost per staff member</div><div class="f-body">accounts for about <strong>$62M</strong> of the $115M increase</div></div><div class="factor amber"><div class="f-num">+11%</div><div class="f-lbl">Staff per student</div><div class="f-body">accounts for about <strong>$12M</strong> of the $115M increase</div></div><div class="factor blue"><div class="f-num">+41%</div><div class="f-lbl">More students</div><div class="f-body">accounts for about <strong>$41M</strong> of the $115M increase</div></div></div>
+<p>Read it this way: more students explain a real but minority share of the growth.
+The district also employs more adults per student than it did in FY2005, and each
+of those adults costs more &mdash; most of which is ordinary wage and benefit
+inflation rather than a policy choice.</p>
+
+<h2>4. After inflation</h2>
+<p>Nominal dollars flatter every twenty-year comparison. In constant FY2025
+dollars, spending per student went from
+<strong>$10,970</strong> to
+<strong>$12,391</strong> &mdash; +13%. That
+is the number to quote; the +86% nominal figure mostly measures the dollar,
+not the district.</p>
+<div class="card"><div class="chart short"><canvas id="real"></canvas></div></div>
+
+<h2>5. Year by year</h2>
+<p>Every figure behind the charts. Dollars in millions.</p>
+<div class="scroll"><table class="wide">
+<thead><tr><th class="lft">Year</th>
+<th>Teachers</th><th>Para-<br>educators</th><th>Student &<br>staff support</th><th>School<br>admin</th><th>Central<br>admin</th><th>Operations &<br>maintenance</th><th>Food service</th><th>Transportation</th>
+<th>Total</th><th>Students</th><th>Per student</th>
+<th>Per student<br>(real)</th><th>Source</th></tr></thead>
+<tbody><tr><td class="lft">FY2005</td><td>45.1</td><td>7.0</td><td>6.9</td><td>4.2</td><td>1.8</td><td>4.5</td><td>1.4</td><td>0.0</td><td class="tot">70.8</td><td>10,637</td><td>$6,655</td><td>$10,970</td><td class="src">F-33</td></tr><tr><td class="lft">FY2006</td><td>46.3</td><td>7.6</td><td>7.0</td><td>4.2</td><td>2.3</td><td>4.8</td><td>1.4</td><td>0.0</td><td class="tot">73.6</td><td>10,822</td><td>$6,804</td><td>$10,866</td><td class="src">F-33</td></tr><tr><td class="lft">FY2007</td><td>49.0</td><td>8.7</td><td>7.3</td><td>4.6</td><td>2.7</td><td>5.2</td><td>1.5</td><td>0.0</td><td class="tot">79.0</td><td>11,180</td><td>$7,063</td><td>$10,966</td><td class="src">F-33</td></tr><tr><td class="lft">FY2008</td><td>53.7</td><td>9.5</td><td>7.9</td><td>5.0</td><td>3.0</td><td>5.5</td><td>1.6</td><td>0.0</td><td class="tot">86.1</td><td>11,615</td><td>$7,416</td><td>$11,089</td><td class="src">F-33</td></tr><tr><td class="lft">FY2009</td><td>60.1</td><td>10.6</td><td>7.7</td><td>5.1</td><td>3.2</td><td>5.8</td><td>1.9</td><td>0.0</td><td class="tot">94.4</td><td>11,449</td><td>$8,242</td><td>$12,368</td><td class="src">F-33</td></tr><tr><td class="lft">FY2010</td><td>59.9</td><td>10.6</td><td>8.5</td><td>5.2</td><td>3.2</td><td>5.8</td><td>2.0</td><td>0.0</td><td class="tot">95.1</td><td>12,047</td><td>$7,897</td><td>$11,660</td><td class="src">F-33</td></tr><tr><td class="lft">FY2011</td><td>66.8</td><td>7.7</td><td>8.3</td><td>5.2</td><td>3.2</td><td>5.8</td><td>2.1</td><td>0.0</td><td class="tot">99.0</td><td>12,176</td><td>$8,128</td><td>$11,634</td><td class="src">F-33</td></tr><tr><td class="lft">FY2012</td><td>67.0</td><td>7.6</td><td>9.2</td><td>5.3</td><td>3.6</td><td>5.9</td><td>2.2</td><td>0.0</td><td class="tot">100.7</td><td>12,652</td><td>$7,960</td><td>$11,161</td><td class="src">F-33</td></tr><tr><td class="lft">FY2013</td><td>72.7</td><td>9.5</td><td>10.0</td><td>5.7</td><td>4.3</td><td>6.6</td><td>2.3</td><td>0.0</td><td class="tot">111.0</td><td>13,019</td><td>$8,526</td><td>$11,783</td><td class="src">F-33</td></tr><tr><td class="lft">FY2014</td><td>77.7</td><td>9.5</td><td>10.2</td><td>6.1</td><td>4.6</td><td>7.4</td><td>2.5</td><td>0.0</td><td class="tot">117.9</td><td>13,465</td><td>$8,758</td><td>$11,910</td><td class="src">F-33</td></tr><tr><td class="lft">FY2015</td><td>80.7</td><td>9.3</td><td>10.6</td><td>6.3</td><td>4.7</td><td>7.5</td><td>2.7</td><td>0.0</td><td class="tot">121.8</td><td>13,661</td><td>$8,918</td><td>$12,114</td><td class="src">F-33</td></tr><tr><td class="lft">FY2016</td><td>82.7</td><td>8.9</td><td>12.7</td><td>6.9</td><td>4.7</td><td>7.8</td><td>2.9</td><td>0.0</td><td class="tot">126.6</td><td>14,000</td><td>$9,043</td><td>$12,130</td><td class="src">F-33</td></tr><tr><td class="lft">FY2017</td><td>88.4</td><td>10.3</td><td>13.2</td><td>7.4</td><td>5.4</td><td>8.4</td><td>3.0</td><td>0.0</td><td class="tot">136.1</td><td>14,317</td><td>$9,505</td><td>$12,485</td><td class="src">F-33</td></tr><tr><td class="lft">FY2018</td><td>92.8</td><td>12.1</td><td>14.7</td><td>8.0</td><td>5.8</td><td>9.3</td><td>3.3</td><td>0.0</td><td class="tot">146.0</td><td>14,647</td><td>$9,965</td><td>$12,776</td><td class="src">F-33</td></tr><tr><td class="lft">FY2019</td><td>97.2</td><td>13.4</td><td>15.2</td><td>8.7</td><td>6.2</td><td>9.7</td><td>3.5</td><td>0.0</td><td class="tot">153.8</td><td>14,560</td><td>$10,562</td><td>$13,301</td><td class="src">F-33</td></tr><tr><td class="lft">FY2020</td><td>99.2</td><td>15.5</td><td>14.2</td><td>8.7</td><td>6.4</td><td>10.5</td><td>3.7</td><td>0.1</td><td class="tot">158.3</td><td>14,939</td><td>$10,600</td><td>$13,185</td><td class="src">F-33</td></tr><tr><td class="lft">FY2021</td><td>99.2</td><td>13.3</td><td>17.2</td><td>8.5</td><td>6.7</td><td>10.8</td><td>3.5</td><td>0.1</td><td class="tot">159.3</td><td>14,428</td><td>$11,041</td><td>$13,117</td><td class="src">F-33</td></tr><tr><td class="lft">FY2022</td><td>114.6</td><td>15.9</td><td>17.4</td><td>10.8</td><td>7.7</td><td>11.6</td><td>3.2</td><td>0.1</td><td class="tot">181.2</td><td>14,820</td><td>$12,230</td><td>$13,454</td><td class="src">F-33</td></tr><tr><td class="lft">FY2023</td><td>113.0</td><td>17.0</td><td>17.9</td><td>12.4</td><td>8.6</td><td>12.3</td><td>3.8</td><td>0.1</td><td class="tot">185.1</td><td>14,805</td><td>$12,503</td><td>$13,211</td><td class="src">F-33</td></tr><tr><td class="lft">FY2024</td><td>114.8</td><td>17.7</td><td>16.4</td><td>10.7</td><td>7.7</td><td>11.5</td><td>4.1</td><td>0.1</td><td class="tot">182.9</td><td>14,776</td><td>$12,379</td><td>$12,704</td><td class="src">CAR</td></tr><tr><td class="lft">FY2025</td><td>115.1</td><td>17.5</td><td>16.8</td><td>11.4</td><td>8.5</td><td>12.4</td><td>4.2</td><td>0.1</td><td class="tot">186.0</td><td>15,013</td><td>$12,391</td><td>$12,391</td><td class="src">CAR</td></tr></tbody></table></div>
+
+<h2>Where these numbers come from, and what to distrust</h2>
+
+<h3>Sources</h3>
+<p>Two official records, spliced. <strong>FY2005&ndash;FY2023</strong> is the
+U.S. Census Bureau's <em>Annual Survey of School System Finances</em> (the F-33),
+which republishes Iowa's own filing with salaries and benefits broken out by
+function. <strong>FY2024&ndash;FY2025</strong> is the Iowa Department of
+Education's <em>Certified Annual Report</em> workbooks, which the F-33 has not yet
+caught up to. Staff counts are the federal Common Core of Data. Inflation is BLS
+CPI-U.</p>
+<p>The splice is not a leap of faith: both sources exist for FY2019&ndash;FY2023, and
+on those five years they agree within <strong>0.6%</strong> on total labor and
+essentially to the dollar on every named category. The FY2025 figures were
+separately reconciled &mdash; to the cent &mdash; against the district's own certified
+CAR.</p>
+
+<div class="callout warn"><strong>Three things to hold loosely.</strong>
+<br><strong>1. Teachers vs. paraeducators is modeled, not reported.</strong> Neither
+source separates them &mdash; both sit inside &ldquo;Instruction.&rdquo; The split here
+assumes a paraeducator costs 0.40 of a teacher and divides Instruction
+pay by staff counts. The sensitivity table below shows it barely moves the story, but
+those two bars are estimates and are tagged as such.
+<br><strong>2. Staff headcounts are noisy where the dollars are not.</strong> Districts
+recode roles between years. Two visible cases: reported teacher aides drop about a
+third at FY2011, and school administrators roughly double at FY2022 &mdash; neither with
+any matching move in spending. The FY2011 one is why the modeled paraeducator line
+steps down that year; read it as a change in counting, not in staffing. The
+<em>dollars</em> throughout this page come from the financial filings and are
+unaffected.
+<br><strong>3. Pandemic money distorts the recent years.</strong> Federal ESSER funds
+inflate FY2021&ndash;FY2024 payroll and their expiry deflates FY2025. The FY2025
+endpoint is a post-ESSER number; treat the last four years as a bump, not a trend.</div>
+
+<h3>Is the teacher/paraeducator split load-bearing?</h3>
+<p>No. Varying the pay-ratio assumption across its plausible range changes the
+paraeducator line by a few million dollars and leaves every conclusion intact.</p>
+<table><thead><tr><th class="lft">Assumed pay ratio</th><th>Paraeducators FY2005</th>
+<th>Paraeducators FY2025</th><th>Share of instruction pay</th></tr></thead>
+<tbody><tr><td class="lft">0.30</td><td>$5.4M</td><td>$13.6M</td><td>10%</td></tr><tr><td class="lft">0.40 &larr; used</td><td>$7.0M</td><td>$17.5M</td><td>13%</td></tr><tr><td class="lft">0.50</td><td>$8.4M</td><td>$21.2M</td><td>16%</td></tr></tbody></table>
+
+<details><summary>Further notes on method</summary>
+<p><strong>Scope.</strong> All operating funds, not just the General Fund &mdash;
+including the Management fund, which carries early-retirement and insurance costs
+that are unmistakably labor and that a General-Fund-only view would miss entirely.
+Capital funds (SAVE, PPEL, construction) and debt service are excluded; SAVE's
+construction-management payroll is excluded with them, for consistency with the
+earlier years.</p>
+<p><strong>Unallocated residual.</strong> The F-33 does not push every salary dollar
+into a named function. That remainder is spread pro-rata across the named categories
+so both halves of the series sit on the same basis. It is under 1% of salaries in
+every year except FY2005 (2.2% of salaries, 7.7% of benefits) &mdash; the base year,
+so it is worth knowing about.</p>
+<p><strong>Transportation</strong> looks near-zero because ICCSD contracts the service
+out: the cost is real but appears as purchased services, not payroll, and so is
+outside a labor analysis by construction.</p>
+<p><strong>Choice of deflator.</strong> CPI-U measures what a dollar buys a household,
+which is the right lens for &ldquo;did this cost taxpayers more in real terms.&rdquo;
+A different question &mdash; &ldquo;did the district pay above the going rate for
+staff?&rdquo; &mdash; would call for the BLS Employment Cost Index for state and local
+government compensation, which has run somewhat above CPI over this period. Because
+the ECI is the larger deflator, an ECI-based series would show <em>less</em> real
+growth than the +13% shown here. So this page states the higher of
+the two figures, not the more favorable one.</p>
+<p><strong>No grade-level split.</strong> A frequent request, deliberately not
+answered: no public dataset reports district spending by elementary / middle / high
+school over this period. It could only be modeled from building-level staffing, and
+would be an allocation, not a measurement.</p>
+</details>
+
+<p class="foot">Built by <code>scripts/build_labor_waterfall.py</code> from
+<code>data/labor/</code>. Every figure traces to the U.S. Census F-33, the Iowa DE
+Certified Annual Report, the federal Common Core of Data, or BLS CPI-U.
+Generated 2026-09-18.</p>
+</div>
+
+<script>
+const FONT={family:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',size:12};
+const GRID='#e2e8f0', TICK='#64748b';
+const fmtM=v=>'$'+(v/1e6).toFixed(1)+'M';
+const LBL=["FY2005", "Teachers", ["Para-", "educators"], ["Student &", "staff support"], ["School", "admin"], ["Central", "admin"], ["Operations &", "maintenance"], "Food service", "Transportation", "FY2025"], DAT=[[0, 70787000], [70787000, 140783882], [140783882, 151364653], [151364653, 161285640], [161285640, 168505894], [168505894, 175213532], [175213532, 183126477], [183126477, 185940628], [185940628, 186024977], [0, 186024975]], COL=["#1e3a5f", "#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948", "#1e3a5f"],
+      DELTA=[70787000, 69996882, 10580771, 9920987, 7220254, 6707638, 7912945, 2814151, 84349, 186024975], NCAT=8;
+
+Chart.defaults.font=FONT; Chart.defaults.color=TICK;
+
+new Chart(document.getElementById('wf'),{
+  type:'bar',
+  data:{labels:LBL,datasets:[{data:DAT,backgroundColor:COL,borderRadius:4,
+        borderSkipped:false,borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    layout:{padding:{top:26}},
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{
+        const i=ctx.dataIndex, d=DELTA[i];
+        return (i===0||i===LBL.length-1)?('Total '+fmtM(d))
+          :((d>=0?'+':'\u2212')+fmtM(Math.abs(d)));
+      }}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:0,minRotation:0,autoSkip:false,
+        font:{...FONT,size:11}}},
+      y:{grid:{color:GRID},ticks:{callback:v=>'$'+(v/1e6).toFixed(0)+'M'},
+        title:{display:true,text:'Annual labor cost',color:TICK}}}
+  },
+  plugins:[{id:'vals',afterDatasetsDraw(ch){
+    const cx=ch.ctx; cx.save();
+    cx.font='700 11px '+FONT.family; cx.textAlign='center'; cx.fillStyle='#0f172a';
+    ch.getDatasetMeta(0).data.forEach((bar,i)=>{
+      const d=DELTA[i];
+      const t=(i===0||i===LBL.length-1)?fmtM(d)
+             :((d>=0?'+':'\u2212')+fmtM(Math.abs(d)));
+      cx.fillText(t,bar.x,bar.y-6);
+    });
+    cx.restore();
+  }}]
+});
+
+const YEARS=[2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+const IDX={"Teachers": [100.0, 102.8, 108.8, 119.2, 133.3, 132.9, 148.2, 148.7, 161.4, 172.3, 179.1, 183.6, 196.1, 205.9, 215.7, 220.2, 220.1, 254.3, 250.7, 254.8, 255.3], "Paraeducators": [100.0, 109.8, 125.5, 135.8, 152.4, 152.0, 109.9, 108.4, 136.1, 136.5, 134.2, 128.5, 147.7, 174.1, 191.9, 222.9, 191.4, 228.2, 244.3, 253.5, 251.9], "Student & staff support": [100.0, 100.7, 105.4, 114.5, 111.5, 122.8, 120.3, 132.9, 144.5, 147.9, 153.1, 183.8, 191.1, 212.0, 219.1, 205.6, 249.2, 251.8, 258.6, 236.4, 243.4], "School administration": [100.0, 101.2, 108.9, 118.2, 120.6, 122.8, 123.3, 126.1, 135.5, 144.6, 149.9, 163.6, 176.6, 189.6, 206.3, 208.2, 202.4, 256.8, 296.6, 255.4, 272.0], "Central administration": [100.0, 130.7, 150.9, 168.5, 182.7, 182.5, 183.1, 206.3, 242.3, 258.2, 266.1, 265.4, 308.1, 329.1, 353.3, 361.3, 380.9, 438.1, 486.7, 436.8, 479.9], "Operations & maintenance": [100.0, 105.7, 115.9, 122.5, 128.6, 129.9, 127.8, 130.3, 145.8, 164.1, 166.9, 172.5, 186.5, 207.0, 215.6, 232.8, 239.8, 257.2, 273.7, 255.5, 275.8], "Food service": [100.0, 100.7, 105.4, 114.9, 137.2, 142.0, 149.0, 156.1, 166.1, 182.3, 195.4, 210.3, 214.4, 238.7, 250.5, 269.3, 251.3, 230.7, 275.7, 295.1, 303.5], "Transportation": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]}, IDXE=[100.0, 101.7, 105.1, 109.2, 107.6, 113.3, 114.5, 118.9, 122.4, 126.6, 128.4, 131.6, 134.6, 137.7, 136.9, 140.4, 135.6, 139.3, 139.2, 138.9, 141.1], ICOL=["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"], ILBL=["Teachers", "Paraeducators", "Student & staff support", "School administration", "Central administration", "Operations & maintenance", "Food service", "Transportation"];
+new Chart(document.getElementById('idx'),{
+  type:'line',
+  data:{labels:YEARS.map(y=>'FY'+y),
+    datasets:ILBL.map((l,i)=>({label:l,data:IDX[l],borderColor:ICOL[i],
+      backgroundColor:ICOL[i],borderWidth:2,pointRadius:0,pointHoverRadius:5,tension:.25}))
+      .concat([{label:'Students',data:IDXE,borderColor:'#0f172a',backgroundColor:'#0f172a',
+        borderWidth:2.5,borderDash:[6,4],pointRadius:0,pointHoverRadius:5,tension:.25}])},
+  options:{responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,usePointStyle:true,
+        pointStyle:'rect',padding:11}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+
+        ' (FY2005=100)'}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:11}},
+      y:{grid:{color:GRID},title:{display:true,text:'Index, FY2005 = 100',color:TICK}}}
+  }
+});
+
+const REAL=[10970, 10866, 10966, 11089, 12368, 11660, 11634, 11161, 11783, 11910, 12114, 12130, 12485, 12776, 13301, 13185, 13117, 13454, 13211, 12704, 12391],
+      NOM=[6655, 6804, 7063, 7416, 8242, 7897, 8128, 7960, 8526, 8758, 8918, 9043, 9505, 9965, 10562, 10600, 11041, 12230, 12503, 12379, 12391];
+new Chart(document.getElementById('real'),{
+  type:'line',
+  data:{labels:YEARS.map(y=>'FY'+y),datasets:[
+    {label:'Per student, nominal',data:NOM,borderColor:'#94a3b8',backgroundColor:'#94a3b8',
+      borderWidth:2,borderDash:[5,4],pointRadius:0,pointHoverRadius:5,tension:.25},
+    {label:'Per student, constant FY2025 dollars',data:REAL,borderColor:'#1e3a5f',
+      backgroundColor:'#1e3a5f',borderWidth:2.5,pointRadius:0,pointHoverRadius:5,tension:.25}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,usePointStyle:true,
+        pointStyle:'rect',padding:11}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': $'+
+        ctx.parsed.y.toLocaleString()}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:11}},
+      y:{grid:{color:GRID},ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k'},
+        title:{display:true,text:'Labor cost per student',color:TICK}}}
+  }
+});
+</script>
+</body></html>

@@ -7,3 +7,6 @@ audit_pdfs/
 # The small derived tables under data/ are committed instead.
 CAR/*.csv
 CAR/*.xlsx
+
+# Census F-33 source workbooks (large; refetched by scripts/fetch_f33_labor.py).
+CAR/_f33_cache/
