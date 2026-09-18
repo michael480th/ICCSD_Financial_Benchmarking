@@ -14,7 +14,15 @@ Inputs (each produced by its own fetch script, each independently sourced):
   data/labor/f33-iccsd.csv   Census F-33, FY2005-FY2023  (salary/benefit by function)
   data/labor/car-iccsd.csv   Iowa DE CAR,  FY2019-FY2025  (extends past the F-33)
   data/labor/staff-fte.csv   NCES CCD,     FY2005-FY2025  (staff counts by role)
-  data/labor/cpi-u.csv       BLS CPI-U                    (constant-dollar view)
+  data/labor/cpi-u.csv       BLS CPI-U                    (taxpayer's constant dollar)
+  data/labor/eci.csv         BLS ECI, K-12 public schools (price of school labor)
+
+Two deflators, used for different questions -- mixing them up inverts the conclusion.
+CPI-U answers "did this cost taxpayers more in real terms" and is applied to spending
+per student. The ECI answers "did the district pay more than the going rate for staff"
+and is applied to cost per staff member. Over this window school labor rose ~74%
+against CPI's ~65%, so pay that merely tracked CPI actually LOST ground to its own
+labor market.
 
 Two deliberate adjustments, both visible on the page:
 
@@ -103,6 +111,7 @@ def num(v):
 def build_rows():
     f33, car = read("f33-iccsd.csv"), read("car-iccsd.csv")
     staff, cpi = read("staff-fte.csv"), read("cpi-u.csv", "year")
+    eci = read("eci.csv")
     rows = []
     for y in range(FIRST, LAST + 1):
         src = f33[y] if y <= SPLICE else car[y]
@@ -141,9 +150,44 @@ def build_rows():
             "labor_per_pupil": round(total / enroll),
             "deflator": float(cpi[y][f"deflator_to_{LAST}"]),
             "real_labor_per_pupil": round(total / enroll * float(cpi[y][f"deflator_to_{LAST}"])),
+            "eci_deflator": float(eci[y][f"deflator_to_{LAST}"]),
             "labor_per_fte": round(total / fte) if fte else None,
         })
     return rows
+
+
+def role_split(rows, staff, eci_deflator):
+    """Separate each role's growth into HEADCOUNT and REAL PRICE PER HEAD. This is the
+    distinction the nominal view hides: a category can double in dollars purely because
+    it doubled in people and the dollar halved in value.
+
+    Prices here are deflated by the ECI for K-12 public-school compensation, not CPI:
+    the question is whether the district outpaid its labor market, not whether pay beat
+    grocery prices.
+
+    Only teachers carry an independently meaningful price here. Paraeducator cost per
+    head is r x teacher cost per head by construction of the modelled split, so its
+    real change is identical to the teachers' by definition, not by evidence -- it is
+    reported for completeness and flagged. Administrator headcounts are self-reported
+    role codings that move without any matching move in spending, so their implied
+    prices are not trustworthy and are excluded from the table."""
+    a, b = rows[0], rows[-1]
+    out = []
+    for name, field, trust in (("Teachers", "teachers_total_fte", "good"),
+                               ("Paraeducators", "instructional_aides_fte", "derived")):
+        n0, n1 = num(staff[a["fiscal_year"]][field]), num(staff[b["fiscal_year"]][field])
+        p0 = a[name] / n0 * eci_deflator
+        p1 = b[name] / n1
+        out.append({"name": name, "trust": trust, "n0": n0, "n1": n1,
+                    "head_pct": (n1 / n0 - 1) * 100,
+                    "p0": p0, "p1": p1, "price_pct": (p1 / p0 - 1) * 100})
+    # Whole-district roll-up, using the comparable FTE series.
+    f0, f1 = a["staff_fte_comparable"], b["staff_fte_comparable"]
+    p0, p1 = a["total_labor"] / f0 * eci_deflator, b["total_labor"] / f1
+    out.append({"name": "All staff", "trust": "good", "n0": f0, "n1": f1,
+                "head_pct": (f1 / f0 - 1) * 100, "p0": p0, "p1": p1,
+                "price_pct": (p1 / p0 - 1) * 100})
+    return out
 
 
 def decompose(a, b):
@@ -207,6 +251,16 @@ def main():
         key=lambda x: x["mult"])
 
     dec = decompose(a, b)
+    # Same decomposition on inflation-adjusted dollars, so "cost per staff member"
+    # reports real pay growth instead of mostly measuring the dollar.
+    # Per-staff cost is deflated by the ECI (price of school labor); enrollment and
+    # staffing ratios are real quantities and need no deflator.
+    a_real = dict(a, total_labor=a["total_labor"] * a["eci_deflator"],
+                  labor_per_fte=a["labor_per_fte"] * a["eci_deflator"])
+    dec_real = decompose(a_real, b)
+    staff_all = read("staff-fte.csv")
+    roles = role_split(rows, staff_all, a["eci_deflator"])
+    eci_infl = (a["eci_deflator"] - 1) * 100
     real_pp_chg = (b["real_labor_per_pupil"] / a["real_labor_per_pupil"] - 1) * 100
     # a["deflator"] scales FY2005 dollars up to FY2025 dollars, so it IS 1 + inflation.
     infl = (a["deflator"] - 1) * 100
@@ -250,6 +304,7 @@ def render(c):
     rows, a, b = c["rows"], c["a"], c["b"]
     growth, top, fastest, dec = c["growth"], c["top"], c["fastest"], c["dec"]
     steps, band, years = c["steps"], c["band"], c["years"]
+    dec_real, roles, eci_infl = c["dec_real"], c["roles"], c["eci_infl"]
 
     enroll_pct = (b["enrollment"] / a["enrollment"] - 1) * 100
     labor_pct = growth / a["total_labor"] * 100
@@ -276,6 +331,27 @@ def render(c):
         f'<div class="f-body">accounts for about <strong>{money(d["dollars"],0)}</strong> '
         f'of the {money(growth,0)} increase</div></div>'
         for d, cls in zip(dec, ["red", "amber", "blue"]))
+
+    # Only the first driver is a price and needs rebasing; the other two are real
+    # quantities (people, students) and are unchanged from the cash view -- saying
+    # "in constant dollars" under a headcount would be nonsense.
+    real_notes = ["rebased to the FY%d school labor market" % LAST,
+                  "a headcount ratio &mdash; no deflator applies",
+                  "a headcount &mdash; no deflator applies"]
+    dec_real_html = "".join(
+        f'<div class="factor {cls}"><div class="f-num">{d["pct"]:+.0f}%</div>'
+        f'<div class="f-lbl">{d["name"]}</div>'
+        f'<div class="f-body">{note}</div></div>'
+        for d, cls, note in zip(dec_real, ["red", "amber", "blue"], real_notes))
+
+    roles_html = "".join(
+        f'<tr><td class="lft">{r["name"]}'
+        + (' <span class="tag">&dagger;</span>' if r["trust"] == "derived" else '')
+        + f'</td><td>{r["n0"]:,.0f}</td><td>{r["n1"]:,.0f}</td>'
+        f'<td class="gap-pos">{r["head_pct"]:+.0f}%</td>'
+        f'<td>${r["p0"]:,.0f}</td><td>${r["p1"]:,.0f}</td>'
+        f'<td class="{"gap-pos" if r["price_pct"] >= 1 else ""}">{r["price_pct"]:+.0f}%</td></tr>'
+        for r in roles)
 
     # Category table
     cat_rows = "".join(
@@ -364,6 +440,7 @@ td.src{{color:var(--mut);font-size:11.5px}}
  font-weight:700}}
 .scroll{{overflow-x:auto;max-height:560px;overflow-y:auto}}
 table.wide{{font-size:11.5px}} table.wide td,table.wide th{{padding:4px 6px}}
+.tiny{{font-size:12px;color:var(--mut);max-width:820px}}
 .foot{{color:var(--mut);font-size:12.5px;margin-top:34px;border-top:1px solid var(--line);
  padding-top:14px}}
 details{{margin:10px 0}} summary{{cursor:pointer;font-weight:600;color:#1e40af}}
@@ -413,15 +490,47 @@ students. Any line above it is a payroll that grew faster than the district it
 serves.</p>
 <div class="card"><div class="chart"><canvas id="idx"></canvas></div></div>
 
-<h2>3. So what actually drove it?</h2>
+<h2>3. So what actually drove it? Headcount, not pay</h2>
 <p>Payroll is the product of three things: how many students there are, how many
 staff the district employs per student, and what each staff member costs. Splitting
-the {money(growth,0)} increase across the three:</p>
+the {money(growth,0)} increase across the three, in cash terms:</p>
 <div class="factors">{dec_html}</div>
-<p>Read it this way: more students explain a real but minority share of the growth.
-The district also employs more adults per student than it did in FY{FIRST}, and each
-of those adults costs more &mdash; most of which is ordinary wage and benefit
-inflation rather than a policy choice.</p>
+<p>On those numbers &ldquo;cost per staff member&rdquo; looks like the main driver. It
+isn&rsquo;t &mdash; that bar is almost entirely the dollar shrinking. The right
+yardstick here is not consumer prices but <strong>the going rate for school
+staff</strong>: BLS&rsquo;s Employment Cost Index for total compensation of state and
+local government workers in elementary and secondary schools, which rose
+{eci_infl:.0f}% over this window (against {c["infl"]:.0f}% for consumer prices &mdash;
+school labor got dearer faster than groceries did). Measured against the market the
+district actually hires in, the pay bar collapses:</p>
+<div class="factors">{dec_real_html}</div>
+<div class="callout"><strong>This is the finding.</strong> Measured against its own
+labor market, what ICCSD pays per staff member has not risen at all in twenty years
+&mdash; it has slightly <em>fallen behind</em>. Essentially all of the real growth in
+payroll is <em>more people</em>, and headcount grew faster than enrollment did.
+Whatever drove this district's spending, it was not paying its staff above the
+going rate.</div>
+
+<h3>Headcount versus price, role by role</h3>
+<p>The same split for the individual payrolls. Pay is rebased to the FY{LAST} school
+labor market, so a flat price means &ldquo;kept pace with what schools pay&rdquo; and a
+negative one means &ldquo;fell behind it&rdquo;:</p>
+<table><thead><tr><th class="lft">Payroll</th><th>Staff FY{FIRST}</th>
+<th>Staff FY{LAST}</th><th>Headcount</th><th>Cost per head FY{FIRST}<br>(at FY{LAST} market)</th>
+<th>Cost per head<br>FY{LAST}</th><th>Vs. market</th></tr></thead><tbody>{roles_html}</tbody></table>
+<p class="tiny">&dagger; Paraeducator cost per head is a fixed multiple of the
+teacher figure by construction of the modeled split, so its real change is identical
+to the teachers&rsquo; by definition rather than by evidence. Administrators are
+omitted: their reported headcounts jump without any matching move in spending (see
+the caveats), which makes an implied price per administrator meaningless.</p>
+<p>So the answer to &ldquo;why did teachers grow so much?&rdquo; is
+<strong>headcount</strong>. The district employs {roles[0]["head_pct"]:.0f}% more
+teachers than in FY{FIRST}, against {enroll_pct:.0f}% more students, while the cost of
+employing one has {"slipped" if roles[0]["price_pct"] < 0 else "held"}
+{abs(roles[0]["price_pct"]):.0f}% {"behind" if roles[0]["price_pct"] < 0 else "ahead of"}
+the school labor market. Class sizes fell with it:
+{a["enrollment"] / roles[0]["n0"]:.1f} students per teacher in FY{FIRST},
+{b["enrollment"] / roles[0]["n1"]:.1f} in FY{LAST}.</p>
 
 <h2>4. After inflation</h2>
 <p>Nominal dollars flatter every twenty-year comparison. In constant FY{LAST}
@@ -496,14 +605,19 @@ so it is worth knowing about.</p>
 <p><strong>Transportation</strong> looks near-zero because ICCSD contracts the service
 out: the cost is real but appears as purchased services, not payroll, and so is
 outside a labor analysis by construction.</p>
-<p><strong>Choice of deflator.</strong> CPI-U measures what a dollar buys a household,
-which is the right lens for &ldquo;did this cost taxpayers more in real terms.&rdquo;
-A different question &mdash; &ldquo;did the district pay above the going rate for
-staff?&rdquo; &mdash; would call for the BLS Employment Cost Index for state and local
-government compensation, which has run somewhat above CPI over this period. Because
-the ECI is the larger deflator, an ECI-based series would show <em>less</em> real
-growth than the +{c["real_pp_chg"]:.0f}% shown here. So this page states the higher of
-the two figures, not the more favorable one.</p>
+<p><strong>Two deflators, deliberately.</strong> They answer different questions and
+using one for both would invert a conclusion. <em>CPI-U</em> (+{c["infl"]:.0f}% over the
+window) measures what a dollar buys a household, and is applied to spending per
+student &mdash; the taxpayer&rsquo;s question. The <em>Employment Cost Index for total
+compensation of state and local government workers in elementary and secondary
+schools</em> (+{eci_infl:.0f}%) measures what employers actually pay for exactly this
+kind of labor, benefits included, and is applied to cost per staff member &mdash; the
+&ldquo;did we outpay the market&rdquo; question. Because school labor outran consumer
+prices, pay that merely tracked CPI in fact lost ground against its own market; a
+CPI-only treatment would have shown teacher cost per head as flat rather than slightly
+behind. The ECI is a national series &mdash; BLS publishes no Iowa or district cut &mdash;
+so it is a benchmark for the wider market, not for Johnson County specifically.</p>
+
 <p><strong>No grade-level split.</strong> A frequent request, deliberately not
 answered: no public dataset reports district spending by elementary / middle / high
 school over this period. It could only be modeled from building-level staffing, and

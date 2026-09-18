@@ -59,6 +59,7 @@ td.src{color:var(--mut);font-size:11.5px}
  font-weight:700}
 .scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
 table.wide{font-size:11.5px} table.wide td,table.wide th{padding:4px 6px}
+.tiny{font-size:12px;color:var(--mut);max-width:820px}
 .foot{color:var(--mut);font-size:12.5px;margin-top:34px;border-top:1px solid var(--line);
  padding-top:14px}
 details{margin:10px 0} summary{cursor:pointer;font-weight:600;color:#1e40af}
@@ -108,15 +109,47 @@ students. Any line above it is a payroll that grew faster than the district it
 serves.</p>
 <div class="card"><div class="chart"><canvas id="idx"></canvas></div></div>
 
-<h2>3. So what actually drove it?</h2>
+<h2>3. So what actually drove it? Headcount, not pay</h2>
 <p>Payroll is the product of three things: how many students there are, how many
 staff the district employs per student, and what each staff member costs. Splitting
-the $115M increase across the three:</p>
+the $115M increase across the three, in cash terms:</p>
 <div class="factors"><div class="factor red"><div class="f-num">+68%</div><div class="f-lbl">Cost per staff member</div><div class="f-body">accounts for about <strong>$62M</strong> of the $115M increase</div></div><div class="factor amber"><div class="f-num">+11%</div><div class="f-lbl">Staff per student</div><div class="f-body">accounts for about <strong>$12M</strong> of the $115M increase</div></div><div class="factor blue"><div class="f-num">+41%</div><div class="f-lbl">More students</div><div class="f-body">accounts for about <strong>$41M</strong> of the $115M increase</div></div></div>
-<p>Read it this way: more students explain a real but minority share of the growth.
-The district also employs more adults per student than it did in FY2005, and each
-of those adults costs more &mdash; most of which is ordinary wage and benefit
-inflation rather than a policy choice.</p>
+<p>On those numbers &ldquo;cost per staff member&rdquo; looks like the main driver. It
+isn&rsquo;t &mdash; that bar is almost entirely the dollar shrinking. The right
+yardstick here is not consumer prices but <strong>the going rate for school
+staff</strong>: BLS&rsquo;s Employment Cost Index for total compensation of state and
+local government workers in elementary and secondary schools, which rose
+74% over this window (against 65% for consumer prices &mdash;
+school labor got dearer faster than groceries did). Measured against the market the
+district actually hires in, the pay bar collapses:</p>
+<div class="factors"><div class="factor red"><div class="f-num">-4%</div><div class="f-lbl">Cost per staff member</div><div class="f-body">rebased to the FY2025 school labor market</div></div><div class="factor amber"><div class="f-num">+11%</div><div class="f-lbl">Staff per student</div><div class="f-body">a headcount ratio &mdash; no deflator applies</div></div><div class="factor blue"><div class="f-num">+41%</div><div class="f-lbl">More students</div><div class="f-body">a headcount &mdash; no deflator applies</div></div></div>
+<div class="callout"><strong>This is the finding.</strong> Measured against its own
+labor market, what ICCSD pays per staff member has not risen at all in twenty years
+&mdash; it has slightly <em>fallen behind</em>. Essentially all of the real growth in
+payroll is <em>more people</em>, and headcount grew faster than enrollment did.
+Whatever drove this district's spending, it was not paying its staff above the
+going rate.</div>
+
+<h3>Headcount versus price, role by role</h3>
+<p>The same split for the individual payrolls. Pay is rebased to the FY2025 school
+labor market, so a flat price means &ldquo;kept pace with what schools pay&rdquo; and a
+negative one means &ldquo;fell behind it&rdquo;:</p>
+<table><thead><tr><th class="lft">Payroll</th><th>Staff FY2005</th>
+<th>Staff FY2025</th><th>Headcount</th><th>Cost per head FY2005<br>(at FY2025 market)</th>
+<th>Cost per head<br>FY2025</th><th>Vs. market</th></tr></thead><tbody><tr><td class="lft">Teachers</td><td>704</td><td>1,086</td><td class="gap-pos">+54%</td><td>$111,440</td><td>$105,944</td><td class="">-5%</td></tr><tr><td class="lft">Paraeducators <span class="tag">&dagger;</span></td><td>272</td><td>414</td><td class="gap-pos">+52%</td><td>$44,576</td><td>$42,378</td><td class="">-5%</td></tr><tr><td class="lft">All staff</td><td>1,322</td><td>2,072</td><td class="gap-pos">+57%</td><td>$93,231</td><td>$89,780</td><td class="">-4%</td></tr></tbody></table>
+<p class="tiny">&dagger; Paraeducator cost per head is a fixed multiple of the
+teacher figure by construction of the modeled split, so its real change is identical
+to the teachers&rsquo; by definition rather than by evidence. Administrators are
+omitted: their reported headcounts jump without any matching move in spending (see
+the caveats), which makes an implied price per administrator meaningless.</p>
+<p>So the answer to &ldquo;why did teachers grow so much?&rdquo; is
+<strong>headcount</strong>. The district employs 54% more
+teachers than in FY2005, against 41% more students, while the cost of
+employing one has slipped
+5% behind
+the school labor market. Class sizes fell with it:
+15.1 students per teacher in FY2005,
+13.8 in FY2025.</p>
 
 <h2>4. After inflation</h2>
 <p>Nominal dollars flatter every twenty-year comparison. In constant FY2025
@@ -191,14 +224,19 @@ so it is worth knowing about.</p>
 <p><strong>Transportation</strong> looks near-zero because ICCSD contracts the service
 out: the cost is real but appears as purchased services, not payroll, and so is
 outside a labor analysis by construction.</p>
-<p><strong>Choice of deflator.</strong> CPI-U measures what a dollar buys a household,
-which is the right lens for &ldquo;did this cost taxpayers more in real terms.&rdquo;
-A different question &mdash; &ldquo;did the district pay above the going rate for
-staff?&rdquo; &mdash; would call for the BLS Employment Cost Index for state and local
-government compensation, which has run somewhat above CPI over this period. Because
-the ECI is the larger deflator, an ECI-based series would show <em>less</em> real
-growth than the +13% shown here. So this page states the higher of
-the two figures, not the more favorable one.</p>
+<p><strong>Two deflators, deliberately.</strong> They answer different questions and
+using one for both would invert a conclusion. <em>CPI-U</em> (+65% over the
+window) measures what a dollar buys a household, and is applied to spending per
+student &mdash; the taxpayer&rsquo;s question. The <em>Employment Cost Index for total
+compensation of state and local government workers in elementary and secondary
+schools</em> (+74%) measures what employers actually pay for exactly this
+kind of labor, benefits included, and is applied to cost per staff member &mdash; the
+&ldquo;did we outpay the market&rdquo; question. Because school labor outran consumer
+prices, pay that merely tracked CPI in fact lost ground against its own market; a
+CPI-only treatment would have shown teacher cost per head as flat rather than slightly
+behind. The ECI is a national series &mdash; BLS publishes no Iowa or district cut &mdash;
+so it is a benchmark for the wider market, not for Johnson County specifically.</p>
+
 <p><strong>No grade-level split.</strong> A frequent request, deliberately not
 answered: no public dataset reports district spending by elementary / middle / high
 school over this period. It could only be modeled from building-level staffing, and
