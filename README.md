@@ -102,6 +102,9 @@ python3 scripts/fetch_f33_labor.py       # Census F-33 salaries/benefits by func
 python3 scripts/fetch_car_labor.py       # Iowa DE CAR workbooks, FY2019-FY2025
 python3 scripts/fetch_staff_fte.py       # NCES staff counts by role, FY2005-FY2025
 python3 scripts/fetch_cpi.py             # BLS CPI-U, for the constant-dollar view
+python3 scripts/fetch_eci.py             # BLS ECI, national K-12 compensation
+python3 scripts/fetch_qcew_iowa.py       # BLS QCEW, wages paid by Iowa public schools
+python3 scripts/fetch_iowa_benchmark.py  # Iowa statewide cost per teacher (same method)
 python3 scripts/build_labor_waterfall.py # -> iccsd-labor-waterfall.html
 ```
 

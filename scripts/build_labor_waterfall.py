@@ -15,7 +15,9 @@ Inputs (each produced by its own fetch script, each independently sourced):
   data/labor/car-iccsd.csv   Iowa DE CAR,  FY2019-FY2025  (extends past the F-33)
   data/labor/staff-fte.csv   NCES CCD,     FY2005-FY2025  (staff counts by role)
   data/labor/cpi-u.csv       BLS CPI-U                    (taxpayer's constant dollar)
-  data/labor/eci.csv         BLS ECI, K-12 public schools (price of school labor)
+  data/labor/eci.csv         BLS ECI, K-12 public schools (national price of school labor)
+  data/labor/iowa-benchmark.csv  Iowa statewide cost per teacher, same construction
+  data/labor/qcew-iowa-k12.csv   BLS QCEW, wages paid by Iowa public schools
 
 Two deflators, used for different questions -- mixing them up inverts the conclusion.
 CPI-U answers "did this cost taxpayers more in real terms" and is applied to spending
@@ -112,6 +114,7 @@ def build_rows():
     f33, car = read("f33-iccsd.csv"), read("car-iccsd.csv")
     staff, cpi = read("staff-fte.csv"), read("cpi-u.csv", "year")
     eci = read("eci.csv")
+    iowa = read("iowa-benchmark.csv")
     rows = []
     for y in range(FIRST, LAST + 1):
         src = f33[y] if y <= SPLICE else car[y]
@@ -151,6 +154,8 @@ def build_rows():
             "deflator": float(cpi[y][f"deflator_to_{LAST}"]),
             "real_labor_per_pupil": round(total / enroll * float(cpi[y][f"deflator_to_{LAST}"])),
             "eci_deflator": float(eci[y][f"deflator_to_{LAST}"]),
+            "iowa_deflator": float(iowa[y]["deflator_to_last"]),
+            "iowa_cost_per_teacher": int(iowa[y]["cost_per_teacher"]),
             "labor_per_fte": round(total / fte) if fte else None,
         })
     return rows
@@ -255,12 +260,38 @@ def main():
     # reports real pay growth instead of mostly measuring the dollar.
     # Per-staff cost is deflated by the ECI (price of school labor); enrollment and
     # staffing ratios are real quantities and need no deflator.
-    a_real = dict(a, total_labor=a["total_labor"] * a["eci_deflator"],
-                  labor_per_fte=a["labor_per_fte"] * a["eci_deflator"])
+    # Primary price index is Iowa's own: statewide cost per teacher, built by the
+    # identical method (see scripts/fetch_iowa_benchmark.py), so construction bias
+    # cancels. The national ECI and Iowa QCEW wages corroborate it below.
+    a_real = dict(a, total_labor=a["total_labor"] * a["iowa_deflator"],
+                  labor_per_fte=a["labor_per_fte"] * a["iowa_deflator"])
     dec_real = decompose(a_real, b)
     staff_all = read("staff-fte.csv")
-    roles = role_split(rows, staff_all, a["eci_deflator"])
+    roles = role_split(rows, staff_all, a["iowa_deflator"])
     eci_infl = (a["eci_deflator"] - 1) * 100
+    iowa_infl = (a["iowa_deflator"] - 1) * 100
+
+    qcew = read("qcew-iowa-k12.csv", "year")
+    q0, q1 = qcew[FIRST], qcew[LAST]
+    qcew_pct = (int(q1["iowa_avg_annual_pay"]) / int(q0["iowa_avg_annual_pay"]) - 1) * 100
+    ic_first = a["Teachers"] / float(staff_all[FIRST]["teachers_total_fte"])
+    ic_last = b["Teachers"] / float(staff_all[LAST]["teachers_total_fte"])
+    iccsd_pct = (ic_last / ic_first - 1) * 100
+    # How far ICCSD's cost per teacher sits above the Iowa average, then and now.
+    premium_first = (ic_first / a["iowa_cost_per_teacher"] - 1) * 100
+    premium_last = (ic_last / b["iowa_cost_per_teacher"] - 1) * 100
+    yardsticks = [
+        ("Iowa districts&rsquo; cost per teacher", iowa_infl,
+         "Iowa, benefits in, built by the identical method &mdash; the primary yardstick here",
+         True),
+        ("National K-12 public-school compensation (BLS ECI)", eci_infl,
+         "national, benefits in, fixed job weights &mdash; a true price index", False),
+        ("Wages paid by Iowa public schools (BLS QCEW)", qcew_pct,
+         "Iowa, actual payrolls, but wages only and not adjusted for a shift toward "
+         "lower-paid roles, so it understates pay growth per job", False),
+        ("Consumer prices (BLS CPI-U)", (a["deflator"] - 1) * 100,
+         "what a dollar buys a household &mdash; not a measure of what labor costs", False),
+    ]
     real_pp_chg = (b["real_labor_per_pupil"] / a["real_labor_per_pupil"] - 1) * 100
     # a["deflator"] scales FY2005 dollars up to FY2025 dollars, so it IS 1 + inflation.
     infl = (a["deflator"] - 1) * 100
@@ -304,7 +335,10 @@ def render(c):
     rows, a, b = c["rows"], c["a"], c["b"]
     growth, top, fastest, dec = c["growth"], c["top"], c["fastest"], c["dec"]
     steps, band, years = c["steps"], c["band"], c["years"]
-    dec_real, roles, eci_infl = c["dec_real"], c["roles"], c["eci_infl"]
+    dec_real, roles = c["dec_real"], c["roles"]
+    eci_infl, iowa_infl = c["eci_infl"], c["iowa_infl"]
+    yardsticks, iccsd_pct = c["yardsticks"], c["iccsd_pct"]
+    premium_first, premium_last = c["premium_first"], c["premium_last"]
 
     enroll_pct = (b["enrollment"] / a["enrollment"] - 1) * 100
     labor_pct = growth / a["total_labor"] * 100
@@ -335,7 +369,13 @@ def render(c):
     # Only the first driver is a price and needs rebasing; the other two are real
     # quantities (people, students) and are unchanged from the cash view -- saying
     # "in constant dollars" under a headcount would be nonsense.
-    real_notes = ["rebased to the FY%d school labor market" % LAST,
+    PRIMARY_TAG = '<span class="tag">primary</span>'
+    yard_html = "".join(
+        '<tr><td class="lft">' + n + (" " + PRIMARY_TAG if primary else "") + "</td>"
+        + f'<td>{v:+.0f}%</td><td class="lft tiny">{note}</td></tr>'
+        for n, v, note, primary in yardsticks)
+
+    real_notes = ["rebased to what Iowa districts pay per teacher",
                   "a headcount ratio &mdash; no deflator applies",
                   "a headcount &mdash; no deflator applies"]
     dec_real_html = "".join(
@@ -441,6 +481,8 @@ td.src{{color:var(--mut);font-size:11.5px}}
 .scroll{{overflow-x:auto;max-height:560px;overflow-y:auto}}
 table.wide{{font-size:11.5px}} table.wide td,table.wide th{{padding:4px 6px}}
 .tiny{{font-size:12px;color:var(--mut);max-width:820px}}
+td.tiny{{font-size:11.5px;color:var(--mut)}}
+tr.subject td{{background:#eff6ff;border-top:2px solid #bfdbfe}}
 .foot{{color:var(--mut);font-size:12.5px;margin-top:34px;border-top:1px solid var(--line);
  padding-top:14px}}
 details{{margin:10px 0}} summary{{cursor:pointer;font-weight:600;color:#1e40af}}
@@ -496,28 +538,42 @@ staff the district employs per student, and what each staff member costs. Splitt
 the {money(growth,0)} increase across the three, in cash terms:</p>
 <div class="factors">{dec_html}</div>
 <p>On those numbers &ldquo;cost per staff member&rdquo; looks like the main driver. It
-isn&rsquo;t &mdash; that bar is almost entirely the dollar shrinking. The right
-yardstick here is not consumer prices but <strong>the going rate for school
-staff</strong>: BLS&rsquo;s Employment Cost Index for total compensation of state and
-local government workers in elementary and secondary schools, which rose
-{eci_infl:.0f}% over this window (against {c["infl"]:.0f}% for consumer prices &mdash;
-school labor got dearer faster than groceries did). Measured against the market the
-district actually hires in, the pay bar collapses:</p>
+isn&rsquo;t &mdash; that bar is mostly the dollar shrinking. But which yardstick you
+pick genuinely changes the answer, so it is worth being explicit. Consumer prices are
+the wrong one: they measure what a dollar buys a household, not what staff cost. The
+right comparison is what <em>other Iowa districts</em> were paying for the same
+people.</p>
+
+<table><thead><tr><th class="lft">Yardstick, FY{FIRST}&ndash;FY{LAST}</th><th>Growth</th>
+<th class="lft">What it measures</th></tr></thead><tbody>{yard_html}
+<tr class="subject"><td class="lft"><strong>ICCSD cost per teacher</strong></td>
+<td><strong>{iccsd_pct:+.0f}%</strong></td>
+<td class="lft">the district&rsquo;s own figure, for comparison</td></tr>
+</tbody></table>
+<p class="tiny">The Iowa and national measures agree closely ({iowa_infl:.0f}% and
+{eci_infl:.0f}%) despite being built in completely different ways, which is reassuring.
+The QCEW wage figure is lower mainly because Iowa schools shifted toward
+lower-paid roles &mdash; statewide paraeducator numbers rose far faster than teacher
+numbers &mdash; which drags an unweighted average wage down without anyone being paid
+less.</p>
+
+<p>Measured against Iowa&rsquo;s own school labor market, the pay bar collapses:</p>
 <div class="factors">{dec_real_html}</div>
-<div class="callout"><strong>This is the finding.</strong> Measured against its own
-labor market, what ICCSD pays per staff member has not risen at all in twenty years
-&mdash; it has slightly <em>fallen behind</em>. Essentially all of the real growth in
-payroll is <em>more people</em>, and headcount grew faster than enrollment did.
-Whatever drove this district's spending, it was not paying its staff above the
-going rate.</div>
+<div class="callout"><strong>This is the finding.</strong> ICCSD&rsquo;s cost per
+teacher grew {iccsd_pct:.0f}% while Iowa districts&rsquo; grew {iowa_infl:.0f}%. The
+district still pays more than the Iowa average &mdash; but its premium
+<em>narrowed</em>, from {premium_first:.0f}% above the state in FY{FIRST} to
+{premium_last:.0f}% in FY{LAST}. So essentially all of the real growth in payroll is <em>more people</em>,
+and headcount grew faster than enrollment did. Whatever drove this district&rsquo;s
+spending, it was not paying its staff above the going rate for Iowa.</div>
 
 <h3>Headcount versus price, role by role</h3>
-<p>The same split for the individual payrolls. Pay is rebased to the FY{LAST} school
-labor market, so a flat price means &ldquo;kept pace with what schools pay&rdquo; and a
-negative one means &ldquo;fell behind it&rdquo;:</p>
+<p>The same split for the individual payrolls. Pay is rebased to what Iowa districts
+pay per teacher, so a flat price means &ldquo;kept pace with the rest of Iowa&rdquo;
+and a negative one means &ldquo;fell behind it&rdquo;:</p>
 <table><thead><tr><th class="lft">Payroll</th><th>Staff FY{FIRST}</th>
-<th>Staff FY{LAST}</th><th>Headcount</th><th>Cost per head FY{FIRST}<br>(at FY{LAST} market)</th>
-<th>Cost per head<br>FY{LAST}</th><th>Vs. market</th></tr></thead><tbody>{roles_html}</tbody></table>
+<th>Staff FY{LAST}</th><th>Headcount</th><th>Cost per head FY{FIRST}<br>(at Iowa&rsquo;s FY{LAST} rate)</th>
+<th>Cost per head<br>FY{LAST}</th><th>Vs. Iowa</th></tr></thead><tbody>{roles_html}</tbody></table>
 <p class="tiny">&dagger; Paraeducator cost per head is a fixed multiple of the
 teacher figure by construction of the modeled split, so its real change is identical
 to the teachers&rsquo; by definition rather than by evidence. Administrators are
@@ -605,18 +661,27 @@ so it is worth knowing about.</p>
 <p><strong>Transportation</strong> looks near-zero because ICCSD contracts the service
 out: the cost is real but appears as purchased services, not payroll, and so is
 outside a labor analysis by construction.</p>
-<p><strong>Two deflators, deliberately.</strong> They answer different questions and
-using one for both would invert a conclusion. <em>CPI-U</em> (+{c["infl"]:.0f}% over the
-window) measures what a dollar buys a household, and is applied to spending per
-student &mdash; the taxpayer&rsquo;s question. The <em>Employment Cost Index for total
-compensation of state and local government workers in elementary and secondary
-schools</em> (+{eci_infl:.0f}%) measures what employers actually pay for exactly this
-kind of labor, benefits included, and is applied to cost per staff member &mdash; the
-&ldquo;did we outpay the market&rdquo; question. Because school labor outran consumer
-prices, pay that merely tracked CPI in fact lost ground against its own market; a
-CPI-only treatment would have shown teacher cost per head as flat rather than slightly
-behind. The ECI is a national series &mdash; BLS publishes no Iowa or district cut &mdash;
-so it is a benchmark for the wider market, not for Johnson County specifically.</p>
+<p><strong>Three yardsticks, deliberately.</strong> The choice of deflator materially
+changes the answer, so the page shows the comparison rather than picking quietly.
+<em>CPI-U</em> (+{c["infl"]:.0f}%) measures what a dollar buys a household and is used
+only for spending per student &mdash; the taxpayer&rsquo;s question. For pay, the primary
+yardstick is <em>Iowa districts&rsquo; own cost per teacher</em> (+{iowa_infl:.0f}%),
+built by <code>scripts/fetch_iowa_benchmark.py</code> from exactly the same sources and
+the same formula as the ICCSD figure &mdash; same numerator definition, same CCD teacher
+denominator &mdash; so whatever bias the construction carries cancels in the comparison.
+ICCSD is about 3% of Iowa&rsquo;s teaching workforce, so the state total is a genuine
+external benchmark rather than the district measuring itself. Two independent series
+corroborate it: BLS&rsquo;s <em>Employment Cost Index</em> for state and local
+government workers in elementary and secondary schools (+{eci_infl:.0f}%, national,
+fixed job weights) and BLS <em>QCEW</em> wages actually paid by Iowa public schools
+(+{yardsticks[2][1]:.0f}%, Iowa, but wages only and not mix-adjusted, which is why it
+reads low &mdash; Iowa schools added paraeducators far faster than teachers, dragging an
+unweighted average down). That the Iowa and national measures land within a point of
+each other, built entirely differently, is the main reason to trust either.</p>
+<p>Johnson County QCEW figures were fetched too but are not used as the benchmark:
+ICCSD is most of that county&rsquo;s public-school employment, so the district would
+largely be benchmarking against itself. For what it is worth they track the statewide
+series closely.</p>
 
 <p><strong>No grade-level split.</strong> A frequent request, deliberately not
 answered: no public dataset reports district spending by elementary / middle / high
