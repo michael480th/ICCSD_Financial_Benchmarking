@@ -210,6 +210,22 @@ for r in rows(p("data/iccsd-cash-supplemental.csv")):
         gf_cash=r["gf_cash_investments"], gf_revenue=r["gf_revenue"], gf_expenditure=r["gf_expenditures"],
         data_basis=("projected" if "projected" in r.get("status","") else "management-unaudited")))
 
+# ICCSD FY2025: adjust the FY25 CAR balance sheet for the corrections the FY2024 audit (filed
+# June 2026) made to the FY2024 CAR — see data/iccsd-fy24-car-vs-audit-cash.csv.
+#   Fund balance: the audit set FY24 ending GF balance at $19,053,053 vs the CAR's $19,366,904
+#   (−$313,851) and reclassified $1,400,106 from restricted to unassigned ($16,281,856 vs the
+#   CAR's $14,881,750). Rolling the FY25 CAR's own net change (−$1,073,229) off the audited base:
+#   total = 18,293,675 − 313,851 = $17,979,824; unassigned = 12,271,410 + 1,400,106 = $13,671,516.
+#   Cash: the audit showed the CAR's fund-level cash allocation is unreliable — FY24 governmental
+#   cash overstated $38.4M in total (GF −$3.4M, SAVE/PPEL −$34.4M; the unapproved-interfund-loan
+#   finding). The FY25 CAR repeats the pattern (GF cash $43,685,677 vs management's actual
+#   $19,364,761 while SAVE collapses to $9.2M), so GF current assets carry management's GF cash,
+#   consistent with the days-cash figure above: 140,114,929 − 43,685,677 + 19,364,761 = $115,794,013.
+# These are estimates pending the FY2025 audit; the row stays flagged management-unaudited.
+setrow("Iowa City CSD", 2025, dict(
+    gf_total_fund_balance=17979824, gf_unassigned=13671516,
+    gf_current_assets=115794013), overwrite=True)
+
 # ICCSD verbatim internal ratios FY15-19 (authoritative override for the internal block)
 ICCSD_VERBATIM = {}
 for r in rows(p("data/iccsd-internal-kpis-fy15-19.csv")):

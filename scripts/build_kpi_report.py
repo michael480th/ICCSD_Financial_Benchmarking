@@ -210,7 +210,9 @@ def exec_summary(series, peer_avg):
       'measure, and its FY2025 audit is still unfiled.</p>'
       f'<ul>{items}</ul>'
       '<p class="exfoot">All figures trace to audited ACFRs or Iowa state filings; ranks are among the 15 districts in '
-      'FY2024 (ICCSD\'s most recent audited year). FY2025 figures are management/unaudited.</p></div>')
+      'FY2024 (ICCSD\'s most recent audited year). FY2025 figures are management/unaudited, with the FY2025 CAR '
+      'balance sheet adjusted for the corrections the FY2024 audit made to the CAR (GF cash, SAVE cash, and '
+      'fund-balance classification).</p></div>')
 
 def build():
     data = load()
@@ -369,7 +371,13 @@ framework</b> (the foundation formula caps spending authority; local voters add 
 <ul>
 <li><b>Sources.</b> Audited ACFRs (FY15–23 ICCSD; FY15–25 peers), Iowa DOM (UAB, enrollment, valuations, levies),
 the Certified Annual Report (function detail FY17–23), and ICCSD's Annual Financial Health Report (FY15–19 internal
-ratios, verbatim). ICCSD's FY2025 audit is <b>not filed</b>; that year uses management/unaudited actuals (PFM). Its FY2024 audit was filed June 2026 and is included as audited.</li>
+ratios, verbatim). ICCSD's FY2025 audit is <b>not filed</b>; that year uses management/unaudited actuals (PFM) and the FY2025 CAR
+<b>adjusted for the corrections the FY2024 audit made to the FY2024 CAR</b>: the audit cut the CAR's governmental-funds
+cash by $38.4M (General Fund −$3.4M, SAVE/PPEL −$34.4M — the unapproved-interfund-loan finding), trimmed the GF ending
+balance by $0.31M, and reclassified $1.4M from restricted to unassigned. Carried into FY2025: adjusted GF balance
+$17.98M (unassigned $13.67M), and GF current assets use management's GF cash ($19.4M) rather than the FY2025 CAR's
+$43.7M, which repeats the misallocation pattern. Details: <code>data/iccsd-fy24-car-vs-audit-cash.csv</code>.
+Its FY2024 audit was filed June 2026 and is included as audited.</li>
 <li><b>GF cash</b> uses General-Fund cash (not all-funds), so day's-cash ties to the district's published series.</li>
 <li><b>Operating revenue</b> for Moody's/S&amp;P ratios is proxied by General Fund revenue. Long-term-liabilities uses
 <b>reported</b> GASB pension/OPEB, not Moody's discount-rate-adjusted figures.</li>

@@ -1,0 +1,11 @@
+item,scope,car_fy24,audited_fy24,correction,note
+cash,General Fund,25913933.42,22536992,-3376941,"FY2024 CAR Balance Sheet by Fund (run Jan 22 2025) vs audited Balance Sheet Governmental Funds (ACFR filed June 10 2026, p20)"
+cash,SAVE fund,47819166.30,,,"CAR shows SAVE cash alone; the audit combines SAVE + PPEL + Other Capital Projects into one Capital Projects Fund (Note 15 reclassification), so the audited comparison is at the combined level below"
+cash,PPEL fund,15377098.37,,,""
+cash,Other Capital Projects,916094.72,,,""
+cash,Capital Projects combined (SAVE+PPEL+Other),64112359.39,29750724,-34361635,"The audit's Capital Projects Fund cash vs the CAR's three capital funds summed - the bulk of the correction; consistent with audit finding of $38M interfund transfers made without board approval"
+cash,Management Levy,13089557.18,13077609,-11948,""
+cash,Nonmajor (Activity + Debt Service),2539675.04,1873480,-666195,"CAR Activity $384,334 + Debt Service $2,155,341 vs audited nonmajor governmental funds cash"
+cash,Total governmental funds,105655524.66,67238805,-38416720,"CAR governmental-funds cash summed vs audited total governmental funds cash. Audited government-wide (incl. internal service) is $84,738,825"
+fund_balance,GF total fund balance,19366903.52,19053053,-313851,"CAR ending GF balance vs audited"
+fund_balance,GF unassigned,14881750.15,16281856,1400106,"The audit reclassified ~$1.4M from restricted to unassigned relative to the CAR"

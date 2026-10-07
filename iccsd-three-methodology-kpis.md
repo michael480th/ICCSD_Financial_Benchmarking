@@ -19,9 +19,33 @@ three frameworks at once. The companion deliverables are:
 | `scripts/build_kpi_dataset.py` | Consolidates the source data and computes every KPI |
 | `scripts/build_kpi_report.py` | Renders the HTML |
 
-Every figure traces to an audited ACFR or an official Iowa state filing. ICCSD has **not filed its
-FY2024 or FY2025 audits**, so those two years use management/unaudited actuals (PFM Financial Advisors,
-presented April 2026); they are flagged as such everywhere.
+Every figure traces to an audited ACFR or an official Iowa state filing. ICCSD's **FY2024 audit was
+filed June 10, 2026** (RSM US LLP; five financial-statement material weaknesses, qualified single-audit
+opinions) and FY2024 is now included **as audited**. Its **FY2025 audit is still unfiled**, so FY2025 uses
+management/unaudited actuals (PFM Financial Advisors, April 2026) plus the FY2025 CAR balance sheet,
+**adjusted for the corrections the FY2024 audit made to the FY2024 CAR** (see below); FY2025 is flagged
+as such everywhere.
+
+### FY2024 audit vs the FY2024 CAR, and how it carries into FY2025
+
+The FY2024 audit materially corrected the district's self-reported CAR, concentrated in cash by fund
+(full detail: `data/iccsd-fy24-car-vs-audit-cash.csv`):
+
+| Item | FY24 CAR | FY24 audited | Correction |
+|---|---:|---:|---:|
+| GF cash & investments | $25,913,933 | $22,536,992 | −$3.38M |
+| SAVE + PPEL + Other Capital cash | $64,112,359 | $29,750,724 (combined Capital Projects Fund) | −$34.36M |
+| **Total governmental-funds cash** | **$105,655,525** | **$67,238,805** | **−$38.42M** |
+| GF ending fund balance | $19,366,904 | $19,053,053 | −$0.31M |
+| GF unassigned balance | $14,881,750 | $16,281,856 | +$1.40M (reclass from restricted) |
+
+The $38.4M cash overstatement matches the audit's finding of ~$38M in interfund transfers made without
+board approval: the CAR reported fund-level cash as if the money had never moved. The FY2025 CAR repeats
+the pattern — GF cash of $43.7M against management's actual of $19.4M, with SAVE cash collapsing to $9.2M —
+so for FY2025 we: (1) roll the FY2025 CAR's own net change (−$1,073,229) off the **audited** FY2024 base,
+giving an adjusted GF balance of **$17,979,824** (unassigned **$13,671,516** after carrying the audit's
+reclassification); and (2) use management's GF cash ($19,364,761) in current assets instead of the FY2025
+CAR's $43.7M. Both are estimates pending the FY2025 audit.
 
 ---
 
